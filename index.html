@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BaBa-Quiz </title>
+  <style>:root{--bg:#173463;--card:#0b2964;--accent:#06b6d4;--muted:#9aa4b2;--success:#10b981;--danger:#ef4444}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:linear-gradient(180deg,#0a1735 0%,#091627 100%);
+      color:#e1e8f0e8;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      padding-top:72px; 
+    }
+
+  
+    .site-header {
+      width:100%;
+      background:#0b1220;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:1000;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .site-header .inner {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 20px;
+      max-width:1100px;
+      margin:auto;
+    }
+    .site-header .brand { font-size:20px; font-weight:bold; color:var(--accent); }
+    .site-header nav ul { display:flex; list-style:none; gap:16px; margin:0; padding:0; }
+    .site-header nav a { color:#ccc; padding:6px 10px; border-radius:8px; text-decoration:none; }
+    .site-header nav a:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .site-header nav a.active {
+      color:#fff;
+      border-bottom:2px solid var(--accent);
+      padding-bottom:4px;
+    }
+.app{
+      width:100%; max-width:980px; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    }
+   
+    .layout{display:flex; gap:18px}
+    main{flex:1; min-width:0}
+    aside{width:260px; max-width:35%; min-width:220px}
+    .card{background:rgba(255,255,255,0.03); padding:14px; border-radius:10px}
+    .center{display:flex; align-items:center; justify-content:center; flex-direction:column}
+    
+    .start input[type="text"]{
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);
+      background:transparent; color:var(--white); margin-bottom:10px; font-size:16px;
+    }
+    .btn{
+      display:inline-block; padding:10px 14px; border-radius:8px; cursor:pointer; border:0;
+      background:var(--accent); color:#042026; font-weight:600;
+    }
+    .muted{color:var(--muted); font-size:13px}
+  
+    .q-header{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
+    .timer{
+      height:12px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden;
+    }
+    .timer .bar{height:100%; width:100%; background:linear-gradient(90deg,var(--accent), #60a5fa); transition:width 0.25s linear}
+    .question{font-size:18px; margin:12px 0}
+    .choices{display:grid; gap:10px}
+.choice {
+  padding:12px; 
+  border-radius:10px; 
+  background:rgba(255,255,255,0.02); 
+  border:1px solid rgba(255,255,255,0.03);
+  cursor:pointer; 
+  text-align:left;
+  color:#fff; 
+    }
+
+    .choice:hover{transform:translateY(-2px)}
+    .choice.correct{background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.3)}
+    .choice.wrong{background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.25)}
+    .meta{display:flex; justify-content:space-between; margin-top:10px; align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    footer{display:flex; gap:8px; margin-top:12px; justify-content:space-between; align-items:center}
+    
+    .lead-list{max-height:380px; overflow:auto; margin-top:8px}
+    .lead-item{display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,0.02)}
+    
+    
+    @media (max-width:600px){.options{grid-template-columns:1fr}.card{padding:16px}.question{font-size:18px}}
+    @media(max-width:768px){
+  nav ul {
+    flex-direction: row; 
+    justify-content: center;
+    gap: 10px; 
+    flex-wrap: wrap; 
+  }
+
+  nav a {
+    font-size: 14px; 
+    padding: 8px 12px; 
+  }
+}
+  </style>
+</head>
+<body>
+  
+  <header class="site-header">
+    <div class="inner">
+      <div class="brand">BaBa-Quiz</div>
+      <nav>
+        <ul>
+          <li><a href="Index.html" class="active">Mainmenu</a></li>
+          <li><a href="Ranking.html"class="active">Leaderboard</a></li>
+          <li><a href="dev.html"class="active">Credits</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="app" role="application" aria-label="Quiz game">
+    <header>
+      <h1>BaBa-Quiz</h1>
+      <header>
+
+
+    <div class="layout">
+      <main>
+             
+<section id="startScreen" class="card start">
+  <div style="display:flex;align-items:flex-start;gap:20px">
+
+    
+    <div style="flex:1">
+      <label for="playerName" class="small">ชื่อผู้เล่น</label>
+      <input id="playerName" type="text" placeholder="พิมพ์ชื่อของคุณ..." maxlength="20" />
+
+      <div style="display:flex;gap:8px;align-items:center; margin-top:8px">
+        <label class="small">เวลา/คำถาม</label>
+        <select id="timePerQuestion">
+          <option value="10">10 วินาที</option>
+          <option value="15" selected>15 วินาที</option>
+          <option value="20">20 วินาที</option>
+          <option value="30">30 วินาที</option>
+        </select>
+        <label class="small" style="margin-left:12px">จำนวนคำถาม</label>
+        <select id="numQuestions">
+          <option value="3">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+        </select>
+      </div>
+
+      
+      <div style="display:flex;gap:8px;align-items:center; margin-top:8px">
+        <label class="small">หมวดหมู่</label>
+        <select id="category">
+          <option value="football">ฟุตบอล</option>
+          <option value="thailand">ประเทศไทย</option>
+          <option value="general" selected>ความรู้รอบตัว</option>
+        </select>
+      </div>
+
+      
+      <div style="margin-top:16px">
+        <button id="btnStart" class="btn">เริ่มเกม</button>
+        <div class="muted" style="margin-top:8px;font-size:13px">
+          คะแนน: +100 ถ้าตอบถูก + เวลาคงเหลือคูณคะแนน
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="card" style="min-width:260px;flex:0.8">
+      <h3 style="margin:0 0 8px 0">กติกาการให้คะแนน</h3>
+      <ul style="margin:8px 0 0 16px;padding:0;line-height:1.6">
+        <li>ตอบถูก: +100 คะแนน พื้นฐาน</li>
+        <li>บวกเวลาเหลือ × 5 เป็นโบนัส (เช่น เหลือ 10 วินาที → +50)</li>
+        <li>ตอบผิดหรือหมดเวลา: ได้ 0 สำหรับคำถามนั้น</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+  
+        
+        <section id="quizScreen" class="card" style="display:none">
+          <div class="q-header">
+            <div>
+              <div class="small">ผู้เล่น: <span id="playerDisplay"></span></div>
+              <div class="small">คำถาม <span id="qIndex">1</span>/<span id="qTotal">10</span></div>
+            </div>
+            <div style="width:45%">
+              <div class="timer" aria-hidden="true">
+                <div id="timerBar" class="bar"></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div id="questionText" class="question">คำถามจะขึ้นที่นี่</div>
+            <div id="choices" class="choices" aria-live="polite"></div>
+            <div class="meta">
+              <div class="small">คะแนนปัจจุบัน: <strong id="score">0</strong></div>
+              <div class="small">เวลาเหลือ: <strong id="timeLeft">--</strong> วินาที</div>
+            </div>
+            <footer>
+              <div>
+                <button id="btnNext" class="btn" disabled>ถัดไป</button>
+                <button id="btnQuit" class="btn" style="background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06);">ออก</button>
+              </div>
+              <div class="small" id="feedback"></div>
+            </footer>
+          </div>
+        </section>
+
+        
+        <section id="resultScreen" class="card" style="display:none">
+          <div class="center">
+            <h2>จบเกม!</h2>
+            <p class="muted">ชื่อ: <strong id="resName"></strong></p>
+            <p class="muted">คะแนนรวม: <strong id="resScore"></strong></p>
+            <p class="muted">วันที่: <span id="resDate"></span></p>
+            <div style="margin-top:12px; display:flex;gap:8px">
+              <button id="btnPlayAgain" class="btn">เล่นอีกครั้ง</button>
+              <button id="btnToStart" class="btn" style="background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)">กลับหน้าเริ่ม</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+
+ <script>
+
+const questionsByCategory = {
+  football: [
+    { q:"นักเตะที่ได้บัลลงดอร์มากที่สุดคือใคร?", options:["คริสเตียโน โรนัลโด","ลีโอเนล เมสซี","โรนัลดินโญ่","ซีดาน"], answer:1 },
+    { q:"ทีมชาติใดชนะฟุตบอลโลกมากที่สุด?", options:["บราซิล","เยอรมัน","อิตาลี","อาร์เจนตินา"], answer:0 },
+    { q:"สนามฟุตบอลมาตรฐานยาวกี่เมตร?", options:["90–100","100–110","100–120","110–130"], answer:2 },
+    { q:"พรีเมียร์ลีกอังกฤษเริ่มจัดครั้งแรกปีใด?", options:["1990","1992","1994","1996"], answer:1 },
+    { q:"ผู้รักษาประตูที่ยิงประตูได้มากที่สุดคือใคร?", options:["ปีเตอร์ ชไมเคิล","โรเจริโอ เซนี่","โอลิเวอร์ คาห์น","บัฟฟอน"], answer:1 },
+    { q:"ฟุตบอลโลก 2002 จัดที่ประเทศใด?", options:["ญี่ปุ่น-เกาหลีใต้","เยอรมัน","ฝรั่งเศส","แอฟริกาใต้"], answer:0 },
+    { q:"ตำแหน่ง Center Back คืออะไร?", options:["กองหน้า","กองกลาง","กองหลังตัวกลาง","ผู้รักษาประตู"], answer:2 },
+    { q:"ทีมใดได้ UCL มากที่สุด?", options:["บาร์เซโลนา","เรอัล มาดริด","เอซี มิลาน","บาเยิร์น"], answer:1 },
+    { q:"ลูกฟุตบอลมีเส้นรอบวงมาตรฐานกี่ซม.?", options:["60–65","66–68","68–70","71–74"], answer:2 },
+    { q:"ใครคือดาวซัลโวพรีเมียร์ลีกตลอดกาล?", options:["อลัน เชียเรอร์","เธียร์รี อองรี","รูนีย์","ซาลาห์"], answer:0 },
+    { q:"ฟุตบอลโลกครั้งแรกจัดปี?", options:["1920","1930","1934","1940"], answer:1 },
+    { q:"สโมสรไทยใดได้แชมป์ไทยลีกมากที่สุด?", options:["บุรีรัมย์ ยูไนเต็ด","เมืองทอง ยูไนเต็ด","ชลบุรี เอฟซี","การท่าเรือ"], answer:0 },
+    { q:"กติกาใบแดงคือ?", options:["ตักเตือน","เชิญออกจากสนาม","ฟรีคิก","เพิ่มเวลา"], answer:1 },
+    { q:"ตำแหน่งที่เน้นการทำเกมรุกเรียกว่า?", options:["เพลย์เมกเกอร์","โกลคีปเปอร์","วิงแบ็ก","สวีปเปอร์"], answer:0 },
+    { q:"บอลโลก 2022 แชมป์คือประเทศใด?", options:["ฝรั่งเศส","บราซิล","อาร์เจนตินา","เยอรมัน"], answer:2 }
+  ],
+  thailand: [
+    { q:"ประเทศไทยมีจังหวัดทั้งหมดกี่จังหวัด?", options:["72","76","77","79"], answer:2 },
+    { q:"แม่น้ำสายหลักที่ยาวที่สุดในไทยคือ?", options:["แม่น้ำเจ้าพระยา","แม่น้ำโขง","แม่น้ำแม่กลอง","แม่น้ำน่าน"], answer:1 },
+    { q:"วันชาติไทยตรงกับวันใด?", options:["5 ธันวาคม","12 สิงหาคม","4 กรกฎาคม","1 มกราคม"], answer:0 },
+    { q:"เขตเศรษฐกิจพิเศษ EEC อยู่ภาคไหน?", options:["เหนือ","อีสาน","ตะวันออก","ใต้"], answer:2 },
+    { q:"เกาะที่ใหญ่ที่สุดของไทยคือ?", options:["เกาะสมุย","เกาะช้าง","เกาะภูเก็ต","เกาะพีพี"], answer:2 },
+    { q:"ภูเขาที่สูงที่สุดในไทยคือ?", options:["ภูสอยดาว","ดอยอินทนนท์","ดอยหลวงเชียงดาว","เขาค้อ"], answer:1 },
+    { q:"ธนบัตรไทยใบสีม่วงคือมูลค่าเท่าไร?", options:["20","50","100","500"], answer:3 },
+    { q:"เพลงชาติไทยเล่นกี่นาที?", options:["ประมาณ 1 นาที","ประมาณ 2 นาที","ประมาณ 3 นาที","ประมาณ 5 นาที"], answer:0 },
+    { q:"กีฬาประจำชาติไทยคือ?", options:["มวยไทย","เซปักตะกร้อ","ฟุตบอล","บาสเกตบอล"], answer:0 },
+    { q:"จังหวัดใดอยู่ใต้สุดของไทย?", options:["นราธิวาส","ยะลา","สตูล","ปัตตานี"], answer:0 },
+    { q:"เขื่อนสิริกิติ์อยู่จังหวัดใด?", options:["อุตรดิตถ์","ตาก","เชียงใหม่","ลำปาง"], answer:0 },
+    { q:"จังหวัดที่มีพื้นที่มากที่สุด?", options:["นครราชสีมา","เชียงใหม่","ตาก","กาญจนบุรี"], answer:0 },
+    { q:"สะพานพระราม 8 ข้ามแม่น้ำอะไร?", options:["เจ้าพระยา","บางปะกง","ท่าจีน","ป่าสัก"], answer:0 },
+    { q:"รถไฟฟ้า BTS สายแรกเปิดปีใด?", options:["1995","1997","1999","2001"], answer:2 },
+    { q:"ก๋วยเตี๋ยวเรือมีถิ่นกำเนิดจากจังหวัดใด?", options:["อยุธยา","ราชบุรี","นครสวรรค์","อ่างทอง"], answer:0 }
+  ],
+  general: [
+    { q:"ดาวเคราะห์ดวงที่ใหญ่ที่สุดคือ?", options:["โลก","ดาวพฤหัสบดี","ดาวเสาร์","ดาวอังคาร"], answer:1 },
+    { q:"น้ำบริสุทธิ์มีค่า pH เท่าไร?", options:["5","7","9","14"], answer:1 },
+    { q:"ภาษาโปรแกรมที่ใช้กันมากที่สุดในเว็บคือ?", options:["Python","JavaScript","C++","Java"], answer:1 },
+    { q:"สัตว์ที่ใหญ่ที่สุดในโลกคือ?", options:["ช้าง","วาฬสีน้ำเงิน","ฉลามวาฬ","ไดโนเสาร์"], answer:1 },
+    { q:"ใครคือผู้ประดิษฐ์หลอดไฟ?", options:["ไอน์สไตน์","นิวตัน","เอดิสัน","เทสลา"], answer:2 },
+    { q:"ก๊าซใดสำคัญต่อการหายใจ?", options:["คาร์บอนไดออกไซด์","ออกซิเจน","ไนโตรเจน","ฮีเลียม"], answer:1 },
+    { q:"1 กิโลเมตร เท่ากับกี่เมตร?", options:["100","1000","10000","100000"], answer:1 },
+    { q:"สมการ E=mc^2 เป็นของใคร?", options:["นิวตัน","ไอน์สไตน์","กาลิเลโอ","ฮอว์กิง"], answer:1 },
+    { q:"แหล่งพลังงานที่ใช้มากที่สุดในโลกคือ?", options:["ถ่านหิน","น้ำมัน","ก๊าซธรรมชาติ","พลังงานแสงอาทิตย์"], answer:1 },
+    { q:"CPU ย่อมาจากอะไร?", options:["Central Process Unit","Central Processing Unit","Computer Personal Unit","Control Processing Unit"], answer:1 },
+    { q:"Adobe Photoshop ใช้ทำอะไร?", options:["ตกแต่งรูปภาพ","พิมพ์งาน","เขียนโค้ด","ทำแผนที่"], answer:0 },
+    { q:"เครื่องวัดอุณหภูมิเรียกว่า?", options:["เทอร์โมมิเตอร์","บารอมิเตอร์","ไฮโกรมิเตอร์","แอมมิเตอร์"], answer:0 },
+    { q:"ภาษาที่ใช้ในการติดต่อกับฐานข้อมูลคือ?", options:["HTML","CSS","SQL","Java"], answer:2 },
+    { q:"ประเทศใดมีประชากรมากที่สุด?", options:["อินเดีย","สหรัฐฯ","จีน","อินโดนีเซีย"], answer:2 },
+    { q:"มหาสมุทรใดใหญ่ที่สุด?", options:["แอตแลนติก","อินเดีย","อาร์กติก","แปซิฟิก"], answer:3 }
+  ]
+    };
+
+
+
+    
+let state = {
+  playerName: '',
+  timePerQuestion: 15,
+  numQuestions: 10,
+  order: [],
+  currentIdx: 0,
+  score: 0,
+  timer: null,
+  timeLeft: 0,
+  answered: false,
+  category: 'general' 
+    };
+   
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const playerNameInput = document.getElementById('playerName');
+    const btnStart = document.getElementById('btnStart');
+    const playerDisplay = document.getElementById('playerDisplay');
+    const qIndex = document.getElementById('qIndex');
+    const qTotal = document.getElementById('qTotal');
+    const questionText = document.getElementById('questionText');
+    const choicesBox = document.getElementById('choices');
+    const timerBar = document.getElementById('timerBar');
+    const timeLeftEl = document.getElementById('timeLeft');
+    const scoreEl = document.getElementById('score');
+    const btnNext = document.getElementById('btnNext');
+    const btnQuit = document.getElementById('btnQuit');
+    const feedback = document.getElementById('feedback');
+    const qTotalSelect = document.getElementById('numQuestions');
+    const timeSelect = document.getElementById('timePerQuestion');
+    const leaderBoardEl = document.getElementById('leaderboard');
+    const btnClear = document.getElementById('btnClear');
+    const btnExport = document.getElementById('btnExport');
+    const resName = document.getElementById('resName');
+    const resScore = document.getElementById('resScore');
+    const resDate = document.getElementById('resDate');
+    const btnPlayAgain = document.getElementById('btnPlayAgain');
+    const btnToStart = document.getElementById('btnToStart');
+    
+   
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+   
+    const LB_KEY = 'quiz_leaderboard_v1';
+    function loadLeaderboard(){
+      const raw = localStorage.getItem(LB_KEY);
+      if(!raw) return [];
+      try{ return JSON.parse(raw) } catch(e){ return [] }
+    }
+    function saveLeaderboard(list){
+      localStorage.setItem(LB_KEY, JSON.stringify(list));
+    }
+    function addLeaderboardEntry(name, score){
+      const list = loadLeaderboard();
+      list.push({name,score,date:new Date().toISOString()});
+      
+      list.sort((a,b)=>b.score - a.score || new Date(b.date)-new Date(a.date));
+      saveLeaderboard(list.slice(0,50));
+      renderLeaderboard();
+    }
+    function clearLeaderboard(){
+      localStorage.removeItem(LB_KEY);
+      renderLeaderboard();
+    }
+    function renderLeaderboard(){
+      const list = loadLeaderboard();
+      leaderBoardEl.innerHTML = '';
+      if(list.length===0){
+        leaderBoardEl.innerHTML = '<div class="muted">ยังไม่มีผู้เล่นในตาราง</div>';
+        return;
+      }
+      list.slice(0,10).forEach((it, idx)=>{
+        const el = document.createElement('div');
+        el.className='lead-item';
+        el.innerHTML = `<div><strong>#${idx+1} ${escapeHtml(it.name)}</strong><div class="small muted">${new Date(it.date).toLocaleString()}</div></div><div style="text-align:right"><div style="font-weight:700">${it.score}</div></div>`;
+        leaderBoardEl.appendChild(el);
+      });
+    }
+    
+  btnStart.addEventListener('click', ()=>{
+  const name = (playerNameInput.value || 'ผู้เล่น').trim();
+  state.playerName = name;
+  state.timePerQuestion = parseInt(timeSelect.value,10) || 15;
+  state.numQuestions = parseInt(qTotalSelect.value,10) || 10;
+  state.category = document.getElementById('category').value;
+  startGame();
+});
+
+
+function startGame(){
+  const pool = questionsByCategory[state.category];
+  const indices = pool.map((_,i)=>i);
+  shuffle(indices);
+  state.order = indices.slice(0, state.numQuestions);
+  state.currentIdx = 0;
+  state.score = 0;
+  state.answered = false;
+  startScreen.style.display='none';
+  resultScreen.style.display='none';
+  quizScreen.style.display='';
+  playerDisplay.textContent = state.playerName;
+  qTotal.textContent = state.numQuestions;
+  scoreEl.textContent = state.score;
+  feedback.textContent = '';
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearTimer();
+  const qPos = state.currentIdx;
+  const pool = questionsByCategory[state.category];
+  const qIdx = state.order[qPos];
+  const q = pool[qIdx];
+  qIndex.textContent = qPos+1;
+  questionText.textContent = q.q;
+  choicesBox.innerHTML = '';
+  btnNext.disabled = true;
+  state.timeLeft = state.timePerQuestion;
+  timeLeftEl.textContent = state.timeLeft;
+  timerBar.style.width = '100%';
+  state.answered = false;
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className='choice';
+    btn.type='button';
+    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+    btn.addEventListener('click',()=>selectChoice(btn,i));
+    choicesBox.appendChild(btn);
+  });
+  startTimer();
+}
+
+
+
+function selectChoice(elem, choiceIdx){
+  if(state.answered) return;
+  state.answered = true;
+  clearTimer();
+  const qIdx = state.order[state.currentIdx];
+  const pool = questionsByCategory[state.category];
+  const q = pool[qIdx]; 
+  const correct = (choiceIdx === q.answer);
+      
+       [...choicesBox.children].forEach((child, i)=>{
+    child.classList.remove('correct','wrong');
+    child.disabled = true;
+    if(i === q.answer){
+      child.classList.add('correct');
+    }
+    if(i === choiceIdx && ! (i===q.answer)){
+      child.classList.add('wrong');
+    }
+  });
+   if(correct){
+    const base = 100;
+    const bonus = Math.round(state.timeLeft * 5);
+    const gained = base + bonus;
+    state.score += gained;
+    feedback.textContent = `ถูก! ได้ ${gained} คะแนน (ฐาน ${base} + โบนัส ${bonus})`;
+  } else {
+    feedback.textContent = 'ผิด หรือเลือกไม่ถูกต้อง';
+  }
+  scoreEl.textContent = state.score;
+  btnNext.disabled = false;
+  setTimeout(()=> {
+    if(btnNext && !btnNext.disabled) {
+      btnNext.focus();
+    }
+  }, 200);
+}
+
+    
+    function startTimer(){
+      updateTimerUI();
+      state.timer = setInterval(()=>{
+        state.timeLeft -= 0.25; 
+        if(state.timeLeft <= 0){
+          state.timeLeft = 0;
+          updateTimerUI();
+          clearTimer();
+          onTimeUp();
+        } else {
+          updateTimerUI();
+        }
+      }, 250);
+    }
+    function clearTimer(){
+      if(state.timer) { clearInterval(state.timer); state.timer = null; }
+    }
+    function updateTimerUI(){
+      const pct = Math.max(0, (state.timeLeft / state.timePerQuestion)) * 100;
+      timerBar.style.width = pct + '%';
+      timeLeftEl.textContent = Math.ceil(state.timeLeft);
+    }
+    function onTimeUp(){
+  if(state.answered) return;
+  state.answered = true;
+  const qIdx = state.order[state.currentIdx];
+  const pool = questionsByCategory[state.category];
+  const q = pool[qIdx]; 
+  [...choicesBox.children].forEach((child, i)=>{
+    child.disabled = true;
+    if(i === q.answer) child.classList.add('correct');
+  });
+  feedback.textContent = 'หมดเวลา!';
+  btnNext.disabled = false;
+}
+    
+    btnNext.addEventListener('click', ()=>{
+      nextQuestion();
+    });
+    function nextQuestion(){
+      clearTimer();
+      state.currentIdx++;
+      feedback.textContent = '';
+      if(state.currentIdx >= state.order.length){
+        endGame();
+      } else {
+        loadQuestion();
+      }
+    }
+    btnQuit.addEventListener('click', ()=>{
+      if(confirm('ต้องการออกจากเกมหรือไม่? คะแนนจะไม่ถูกบันทึกถ้ายังไม่จบ')) {
+        stopAndGoStart();
+      }
+    });
+
+    function stopAndGoStart(){
+      clearTimer();
+      startScreen.style.display='';
+      quizScreen.style.display='none';
+      resultScreen.style.display='none';
+    }
+
+    
+    function endGame(){
+      clearTimer();
+      quizScreen.style.display='none';
+      resultScreen.style.display='';
+      resName.textContent = state.playerName;
+      resScore.textContent = state.score;
+      resDate.textContent = new Date().toLocaleString();
+      addLeaderboardEntry(state.playerName, state.score);
+    }
+
+    btnPlayAgain.addEventListener('click', ()=>{
+    
+      startGame();
+    });
+    btnToStart.addEventListener('click', ()=>{
+      stopAndGoStart();
+    });
+
+    
+    btnExport.addEventListener('click', ()=>{
+      const list = loadLeaderboard();
+      if(list.length===0){ alert('ไม่มีข้อมูลส่งออก'); return; }
+      const rows = [['name','score','date']];
+      list.forEach(it=>rows.push([it.name, it.score, it.date]));
+      const csv = rows.map(r=>r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'leaderboard.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    btnClear.addEventListener('click', ()=>{
+      if(confirm('ต้องการล้างตารางจัดอันดับทั้งหมดหรือไม่?')) clearLeaderboard();
+    });
+
+   
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+   
+    (function init(){
+      
+      playerNameInput.value = localStorage.getItem('last_player_name') || '';
+     
+      btnStart.addEventListener('click', ()=> localStorage.setItem('last_player_name', playerNameInput.value || ''));
+      renderLeaderboard();
+    })();
+
+   
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        if(startScreen.style.display !== 'none'){
+          btnStart.click();
+        } else if (quizScreen.style.display !== 'none' && !btnNext.disabled){
+          btnNext.click();
+        }
+      }
+    });
+
+    
+    choicesBox.addEventListener('mousedown', (e)=> e.preventDefault());
+  </script>
+</body>
+</html>
